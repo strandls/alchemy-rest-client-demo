@@ -1,0 +1,8 @@
+// include client implementation
+include 'common', 'client'
+
+// append 'alchemy-' to the project name
+rootProject.name = 'alchemy-rest-client-demo'
+
+// append auth to each root project name to each child
+rootProject.children.each { it.name = rootProject.name + "-" + it.name }

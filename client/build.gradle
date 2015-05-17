@@ -1,0 +1,22 @@
+sourceSets {
+    main { java { srcDir 'generated-src/main/java'
+        } }
+}
+
+compileJava.dependsOn(':generateClientSrc')
+
+dependencies {
+    // infra structure dependencies
+    compile 'commons-configuration:commons-configuration:1.10'
+    compile 'org.apache.commons:commons-pool2:2.3'
+    
+    // common json and exception handling
+    compile project(':alchemy-rest-client-demo-common')
+
+    // test dependencies
+    testCompile(getRootProject())
+    testCompile(getRootProject().configurations.testCompile.allDependencies)
+    testCompile files(project.parent.sourceSets.test.output)
+}
+
+

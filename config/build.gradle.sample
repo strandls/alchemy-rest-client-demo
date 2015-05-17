@@ -1,0 +1,18 @@
+apply from: "config/common.build.gradle"
+
+
+gradle.taskGraph.whenReady {taskGraph ->
+    if (taskGraph.hasTask(release)) {
+        version = '1.0'
+    } else {
+        version = '1.0-SNAPSHOT'
+    }
+}
+
+dependencies {
+    // compile dependencies
+
+
+    // test dependencies    
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+}

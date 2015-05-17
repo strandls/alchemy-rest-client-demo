@@ -1,0 +1,91 @@
+apply from: "config/common.build.gradle"
+apply plugin: 'war'
+apply plugin: 'eclipse-wtp'
+apply plugin: 'com.bmuschko.tomcat'
+
+jar.enabled = true
+
+buildscript {
+    repositories { jcenter() }
+
+    dependencies { classpath 'com.bmuschko:gradle-tomcat-plugin:2.2.2' }
+}
+
+gradle.taskGraph.whenReady {taskGraph ->
+    if (taskGraph.hasTask(release)) {
+        version = '0.9'
+    } else {
+        version = '0.9-SNAPSHOT'
+    }
+}
+
+configurations {
+    clientGen { extendsFrom compile }
+}
+
+tomcatRun { 
+	webDefaultXml = file("src/main/webapp/WEB-INF/web.xml") 
+}
+
+dependencies {
+    // Jersey related
+    compile 'org.glassfish.jersey.containers:jersey-container-servlet:2.17'
+    compile 'org.glassfish.jersey.core:jersey-client:2.17'
+    compileOnly 'javax.servlet:javax.servlet-api:3.1.0'
+    compile 'org.glassfish.hk2:guice-bridge:2.2.0-b16'
+    compile 'com.google.inject.extensions:guice-servlet:3.0'
+
+    // common json and exception handling
+    compile project(':alchemy-rest-client-demo-common')
+
+    // client code generation related
+    clientGen group: 'com.strandls.alchemy', name: 'alchemy-rest-client-generator', version: '0.9-SNAPSHOT', changing: true
+
+    // test dependencies
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+    testCompile group: 'org.glassfish.jersey.test-framework.providers', name: 'jersey-test-framework-provider-grizzly2', version: '2.17'
+    testCompile group: 'org.glassfish.jersey.containers', name: 'jersey-container-grizzly2-servlet', version: '2.17'
+    testCompile group: 'com.strandls.alchemy', name: 'alchemy-rest-client-generator', version: '0.9-SNAPSHOT', changing: true
+    testCompile 'javax.servlet:javax.servlet-api:3.1.0'
+
+    // tomcat related
+    providedCompile 'javax.servlet:servlet-api:2.5',
+                'javax.servlet:jsp-api:2.0'
+                
+    def tomcatVersion = '7.0.59'
+    tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
+           "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}",
+           "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
+}
+
+// package the test code for integration / unit testing client code.
+task testJar(type: Jar) {
+    classifier = 'tests'
+    from sourceSets.test.output
+    from sourceSets.main.output
+}
+
+artifacts { archives testJar }
+
+task generateClientSrc(dependsOn: [jar, testJar]) << {
+    ant.taskdef(name: 'restProxy', classname: 'com.strandls.alchemy.rest.client.stubgenerator.RestProxyGenerator', classpath: configurations.clientGen.asPath + ":" + jar.archivePath)
+    ant.restProxy(outputDir:"client/generated-src/main/java", includes:"com\\.strandls\\..*", destinationPackage:"com.strandls.alchemy.webservices.client", classSuffix:"Client")
+}
+
+
+// subproject configuration
+subprojects {
+    // make sure sonar plugin is not applied to subprojects.
+    // the plugin works for subprojects when applied to the root project
+    project.ext.set("skipSonarPlugin", true)
+
+    apply from: "config/common.build.gradle"
+
+    gradle.taskGraph.whenReady {taskGraph ->
+        if (taskGraph.hasTask(release)) {
+            version = '0.9'
+        } else {
+            version = '0.9-SNAPSHOT'
+        }
+    }
+}

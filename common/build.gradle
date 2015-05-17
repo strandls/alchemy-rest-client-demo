@@ -1,0 +1,6 @@
+dependencies { compile 'commons-io:commons-io:2.4'     
+    compile 'com.strandls.alchemy:alchemy-inject:0.9-SNAPSHOT'
+    compile 'com.strandls.alchemy:alchemy-inject-json:0.9-SNAPSHOT'
+    compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.1'
+    compile group: 'com.strandls.alchemy', name: 'alchemy-rest-client-generator', version: '0.9-SNAPSHOT', changing: true
+}

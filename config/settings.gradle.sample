@@ -1,0 +1,3 @@
+// append 'alchemy-' to the project name
+
+rootProject.name = 'alchemy-' + rootProject.name
