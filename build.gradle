@@ -39,12 +39,12 @@ dependencies {
     compile project(':alchemy-rest-client-demo-common')
 
     // client code generation related
-    clientGen group: 'com.strandls.alchemy', name: 'alchemy-rest-client-generator', version: '0.9-SNAPSHOT', changing: true
+    clientGen group: 'com.strandls.alchemy', name: 'alchemy-rest-client-generator', version: '0.9', changing: true
 
     // test dependencies
     testCompile group: 'org.glassfish.jersey.test-framework.providers', name: 'jersey-test-framework-provider-grizzly2', version: '2.17'
     testCompile group: 'org.glassfish.jersey.containers', name: 'jersey-container-grizzly2-servlet', version: '2.17'
-    testCompile group: 'com.strandls.alchemy', name: 'alchemy-rest-client-generator', version: '0.9-SNAPSHOT', changing: true
+    testCompile group: 'com.strandls.alchemy', name: 'alchemy-rest-client-generator', version: '0.9', changing: true
     testCompile 'javax.servlet:javax.servlet-api:3.1.0'
 
     // tomcat related
